@@ -1,0 +1,70 @@
+void read_problem_data(string problem) {
+	string stu_fn = "";
+	string grafos = "";
+	if (problem == "TINY") 
+	{
+		stu_fn = "tiny.stu";
+		stu_no = 10;
+		v=crs_no = 5;
+		per_no = 5;
+	}
+	
+	crs_per_stu_n = new int[stu_no + 1](); // δημιουργία πίνακα και αρχικοποίηση με 0
+	crs_per_stu = new int*[stu_no + 1]();
+	stu_per_crs_n = new int[crs_no + 1]();
+	stu_per_crs = new int*[crs_no + 1]();
+	conflict_matrix = new int*[crs_no + 1]();
+	for (int i = 0; i < crs_no + 1; i++) {
+		conflict_matrix[i] = new int[crs_no + 1]();
+	}
+	fstream filestr;
+	string buffer;
+	filestr.open(stu_fn.c_str());
+	int stu_index = 1;
+	if (filestr.is_open()) {
+		while (getline(filestr, buffer)) {
+			string buffer2;
+			stringstream ss;
+			ss.str(buffer); // αρχικοποίηση stringstream
+			int crs = 0; // αριθμός μαθημάτων στα οποία θα εξεταστεί ο σπουδαστής
+			while (ss >> buffer2) {
+				int crs_index = atoi(buffer2.c_str());
+				crs++;
+				stu_per_crs_n[crs_index]++;
+			}
+			crs_per_stu_n[stu_index] = crs;
+			crs_per_stu[stu_index] = new int[crs]();
+			ss.clear();
+			ss.str(buffer);
+			int j = 0;
+			while (ss >> buffer2) {
+				int crs_index = atoi(buffer2.c_str());
+				crs_per_stu[stu_index][j] = crs_index;
+				j++;
+			}
+			stu_index++;
+		}
+		filestr.close();
+		
+		// δημιουργία πίνακα crs_per_stu
+		for (int i = 1; i < crs_no + 1; i++) {
+			int students = stu_per_crs_n[i];
+			stu_per_crs[i] = new int[students]();
+		}
+		int temp[crs_no + 1];
+		for (int i = 0; i <= crs_no; i++)
+			temp[i] = 0;
+		for (int i = 1; i < stu_no + 1; i++) {
+			for (int j = 0; j < crs_per_stu_n[i]; j++) {
+				int k = crs_per_stu[i][j];
+				stu_per_crs[k][temp[k]] = i;
+				temp[k]++;
+			}
+		}
+		
+	
+	} else {
+		cout << "Error opening file: " << stu_fn << endl;
+		exit(-1);
+	}
+}
